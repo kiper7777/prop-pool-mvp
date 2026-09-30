@@ -1,0 +1,19 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Header } from '@/components/Header';
+import { projects, money } from '@/lib/data';
+import { ShareCalculator } from '@/components/ShareCalculator';
+
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = projects.find(p => p.slug === slug);
+  if (!project) notFound();
+  const remaining = Math.max(project.target - project.committed, 0);
+
+  return <main><Header /><section className="page-hero container"><Link href="/#projects" className="back-link">← Все проекты</Link><div className="page-title-row"><div><div className="eyebrow"><span /> DEMO PROJECT</div><h1>{project.title}</h1><p>{project.note}</p></div><span className="live-pill"><i />{project.status}</span></div></section>
+  <section className="container project-detail-grid"><div className="project-detail-main"><div className="panel"><div className="panel-head"><h2>Project overview</h2><span className="badge">DEMO DATA</span></div><div className="big-progress"><div><span>Funding progress</span><strong>{project.stageProgress}%</strong></div><div className="progress"><span style={{width:`${project.stageProgress}%`}} /></div></div><div className="metric-grid four"><div><span>Target</span><strong>{money(project.target)}</strong></div><div><span>Committed</span><strong>{money(project.committed)}</strong></div><div><span>Remaining</span><strong>{money(remaining)}</strong></div><div><span>Participants</span><strong>{project.participants}</strong></div></div></div>
+  <div className="panel"><h2>Project lifecycle</h2><div className="timeline"><div className="done"><b>01</b><span><strong>Project created</strong><small>Rules, target and risk disclosure prepared.</small></span></div><div className="current"><b>02</b><span><strong>Funding</strong><small>Participant applications and capital formation.</small></span></div><div><b>03</b><span><strong>Challenge</strong><small>Starts only after project requirements are met.</small></span></div><div><b>04</b><span><strong>Funded account</strong><small>Conditional on successful challenge completion.</small></span></div><div><b>05</b><span><strong>Trading & payout</strong><small>No payout is guaranteed.</small></span></div><div><b>06</b><span><strong>Distribution</strong><small>Calculated from the documented distributable amount.</small></span></div></div></div>
+  <div className="panel"><h2>Risk snapshot</h2><div className="risk-list"><p><b>Challenge risk</b><span>The challenge can fail and its fee may be lost.</span></p><p><b>Trading risk</b><span>A funded account can incur losses or be terminated under prop-company rules.</span></p><p><b>Counterparty risk</b><span>Rules, payout conditions and service availability may change.</span></p><p><b>Return risk</b><span>Profit and distributions are not guaranteed.</span></p></div><Link href="/risk" className="text-link">Read full Risk Centre →</Link></div></div>
+  <aside className="project-aside"><div className="join-card"><span className="badge">DEMO APPLICATION</span><h3>Request participation</h3><p>Before production launch, payment and legal eligibility must be reviewed for the operating jurisdiction.</p><div className="join-meta"><div><span>Minimum</span><strong>{money(project.minimum)}</strong></div><div><span>Available</span><strong>{money(remaining)}</strong></div></div><button className="btn btn-primary btn-block" type="button">Request participation</button><small>No real payment is processed in this MVP.</small></div><ShareCalculator /></aside></section>
+  <footer className="footer simple"><div className="container footer-note">Demo project. Real FTMO or other prop-company parameters must be verified from official sources before publication.</div></footer></main>
+}
